@@ -37,5 +37,10 @@ build/
 mvnw
 mvnw.cmd
 
-### Application Properties (opcional) ###
-# application-local.properties
+### Environment variables ###
+.env
+.env.local
+.env.*
+
+### Application Properties sensibles ###
+application-local.properties
