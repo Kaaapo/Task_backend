@@ -175,4 +175,4 @@ java -jar target/taskmanager-backend-0.0.1-SNAPSHOT.jar
 
 ## Autor
 
-Task Manager Team
+Juan Camilo 🖤
