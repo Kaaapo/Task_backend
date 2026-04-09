@@ -1,5 +1,6 @@
 -- ===================================
 -- Datos iniciales para el Gestor de Proyectos
+-- Ejecutar una sola vez sobre la BD vacía
 -- ===================================
 
 -- Estados del sistema
@@ -11,10 +12,9 @@ INSERT INTO estados (nombre, descripcion, color, orden) VALUES
     ('Pausado', 'Elemento temporalmente detenido', '#f59e0b', 5),
     ('Cancelado', 'Elemento cancelado permanentemente', '#ef4444', 6),
     ('Pendiente', 'Elemento pendiente de iniciar', '#8b5cf6', 7),
-    ('En Revisión', 'Elemento en proceso de revisión', '#06b6d4', 8)
-ON CONFLICT DO NOTHING;
+    ('En Revisión', 'Elemento en proceso de revisión', '#06b6d4', 8);
 
--- Tipos de proyecto
+-- Tipos de proyecto (estado_id = 1 = Activo)
 INSERT INTO tipos_proyecto (nombre, descripcion, color, icono, estado_id) VALUES
     ('Software', 'Desarrollo de aplicaciones y sistemas', '#3b82f6', 'code', 1),
     ('Web', 'Desarrollo de sitios y aplicaciones web', '#8b5cf6', 'globe', 1),
@@ -23,5 +23,4 @@ INSERT INTO tipos_proyecto (nombre, descripcion, color, icono, estado_id) VALUES
     ('Diseño', 'Proyectos de diseño gráfico y UX/UI', '#ec4899', 'palette', 1),
     ('Marketing', 'Campañas y estrategias de marketing', '#14b8a6', 'megaphone', 1),
     ('Consultoría', 'Proyectos de consultoría y asesoría', '#6366f1', 'briefcase', 1),
-    ('Investigación', 'Proyectos de investigación y desarrollo', '#f97316', 'search', 1)
-ON CONFLICT DO NOTHING;
+    ('Investigación', 'Proyectos de investigación y desarrollo', '#f97316', 'search', 1);
