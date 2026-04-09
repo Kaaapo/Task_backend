@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para Empresa
- * Incluye el nombre del estado para enriquecer la respuesta
- */
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +13,15 @@ public class EmpresaDTO {
     private Long id;
     private String nombre;
     private String descripcion;
+    private String nit;
     private String correo;
+    private String telefono;
+    private String direccion;
+    private String logoUrl;
+    private String sector;
+    private Long creadorId;
+    private String creadorNombre;
     private Long estadoId;
-    private String estadoNombre; // Campo enriquecido
+    private String estadoNombre;
+    private LocalDateTime fechaCreacion;
 }

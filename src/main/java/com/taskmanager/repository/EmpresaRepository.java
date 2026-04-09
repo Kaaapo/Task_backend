@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 @Repository
 public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
-    // Métodos personalizados
     Optional<Empresa> findByCorreo(String correo);
     List<Empresa> findByEstadoId(Long estadoId);
+    List<Empresa> findByCreadorId(Long creadorId);
 }

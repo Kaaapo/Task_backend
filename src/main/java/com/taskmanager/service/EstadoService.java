@@ -47,6 +47,8 @@ public class EstadoService {
         Estado estado = new Estado();
         estado.setNombre(dto.getNombre());
         estado.setDescripcion(dto.getDescripcion());
+        estado.setColor(dto.getColor());
+        estado.setOrden(dto.getOrden());
         
         Estado saved = estadoRepository.save(estado);
         return convertToDTO(saved);
@@ -61,6 +63,8 @@ public class EstadoService {
         
         estado.setNombre(dto.getNombre());
         estado.setDescripcion(dto.getDescripcion());
+        estado.setColor(dto.getColor());
+        estado.setOrden(dto.getOrden());
         
         Estado updated = estadoRepository.save(estado);
         return convertToDTO(updated);
@@ -83,7 +87,9 @@ public class EstadoService {
         return new EstadoDTO(
                 estado.getId(),
                 estado.getNombre(),
-                estado.getDescripcion()
+                estado.getDescripcion(),
+                estado.getColor(),
+                estado.getOrden()
         );
     }
 }

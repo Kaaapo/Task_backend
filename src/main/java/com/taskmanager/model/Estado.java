@@ -25,4 +25,9 @@ public class Estado {
     
     @Column(length = 500)
     private String descripcion;
+
+    @Column(length = 7)
+    private String color;
+
+    private Integer orden;
 }

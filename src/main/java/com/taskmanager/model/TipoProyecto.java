@@ -26,6 +26,12 @@ public class TipoProyecto {
     @Column(length = 500)
     private String descripcion;
     
+    @Column(length = 7)
+    private String color;
+
+    @Column(length = 50)
+    private String icono;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_id", nullable = false)
     private Estado estado;

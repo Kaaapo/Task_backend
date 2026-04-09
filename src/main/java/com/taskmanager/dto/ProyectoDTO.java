@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para Proyecto
- * Incluye nombres enriquecidos de empresa, tipo y estado
- */
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,10 +15,19 @@ public class ProyectoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
+    private String codigo;
     private Long empresaId;
-    private String empresaNombre; // Campo enriquecido
+    private String empresaNombre;
     private Long tipoProyectoId;
-    private String tipoProyectoNombre; // Campo enriquecido
+    private String tipoProyectoNombre;
     private Long estadoId;
-    private String estadoNombre; // Campo enriquecido
+    private String estadoNombre;
+    private Long creadorId;
+    private String creadorNombre;
+    private String prioridad;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFinEstimada;
+    private LocalDate fechaFinReal;
+    private BigDecimal progreso;
+    private LocalDateTime fechaCreacion;
 }

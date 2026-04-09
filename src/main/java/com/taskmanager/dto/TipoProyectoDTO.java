@@ -14,6 +14,8 @@ public class TipoProyectoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
+    private String color;
+    private String icono;
     private Long estadoId;
-    private String estadoNombre; // Campo enriquecido
+    private String estadoNombre;
 }
