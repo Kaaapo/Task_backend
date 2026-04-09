@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface ComentarioTareaRepository extends JpaRepository<ComentarioTarea, Long> {
     List<ComentarioTarea> findByTareaIdOrderByFechaCreacionDesc(Long tareaId);
-    List<ComentarioTarea> findByAutorId(Long autorId);
 }

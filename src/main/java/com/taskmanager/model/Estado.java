@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad Estado
- * Representa los diferentes estados que pueden tener las entidades del sistema
- */
 @Entity
 @Table(name = "estados")
 @Data

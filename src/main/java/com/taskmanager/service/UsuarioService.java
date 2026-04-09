@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,13 +48,6 @@ public class UsuarioService {
 
         Usuario updated = usuarioRepository.save(usuario);
         return convertToDTO(updated);
-    }
-
-    public void updateUltimoAcceso(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", id));
-        usuario.setUltimoAcceso(LocalDateTime.now());
-        usuarioRepository.save(usuario);
     }
 
     public UsuarioDTO convertToDTO(Usuario usuario) {

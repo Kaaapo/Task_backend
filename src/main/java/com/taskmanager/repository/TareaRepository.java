@@ -10,8 +10,6 @@ import java.util.List;
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByProyectoId(Long proyectoId);
     List<Tarea> findByAsignadoId(Long asignadoId);
-    List<Tarea> findByEstadoId(Long estadoId);
     List<Tarea> findByProyectoIdAndEstadoId(Long proyectoId, Long estadoId);
-    List<Tarea> findByCreadorId(Long creadorId);
     List<Tarea> findByProyectoIdOrderByOrdenAsc(Long proyectoId);
 }

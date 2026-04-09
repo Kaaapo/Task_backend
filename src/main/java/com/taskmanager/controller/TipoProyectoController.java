@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Controller REST para Tipos de Proyecto
- * Endpoints: /api/tipos-proyecto
- */
 @RestController
 @RequestMapping("/api/tipos-proyecto")
 public class TipoProyectoController {

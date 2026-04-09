@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad TipoProyecto
- * Representa los tipos de proyecto disponibles
- */
 @Entity
 @Table(name = "tipos_proyecto")
 @Data
