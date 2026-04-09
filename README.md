@@ -181,3 +181,24 @@ Authorization: Bearer <token-jwt>
 ```
 
 El token se obtiene al registrarse o hacer login.
+
+CORS está configurado para permitir peticiones desde:
+- `http://localhost:5173` (Vite dev server)
+- `http://localhost:3000` (alternativa)
+
+## Testing
+
+```bash
+mvn test
+```
+
+## Build para producción
+
+```bash
+mvn clean package
+java -jar target/taskmanager-backend-0.0.1-SNAPSHOT.jar
+```
+
+## Autor
+
+Juan Camilo 🖤
