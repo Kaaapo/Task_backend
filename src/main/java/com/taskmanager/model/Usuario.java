@@ -48,12 +48,33 @@ public class Usuario {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "email_verificado", nullable = false)
+    private Boolean emailVerificado = false;
+
+    @Column(name = "token_verificacion", length = 255)
+    private String tokenVerificacion;
+
+    @Column(name = "token_verificacion_expiracion")
+    private LocalDateTime tokenVerificacionExpiracion;
+
+    @Column(name = "intentos_fallidos", nullable = false)
+    private Integer intentosFallidos = 0;
+
+    @Column(name = "cuenta_bloqueada_hasta")
+    private LocalDateTime cuentaBloqueadaHasta;
+
     @PrePersist
     protected void onCreate() {
         this.fechaRegistro = LocalDateTime.now();
         this.ultimoAcceso = LocalDateTime.now();
         if (this.activo == null) {
             this.activo = true;
+        }
+        if (this.emailVerificado == null) {
+            this.emailVerificado = false;
+        }
+        if (this.intentosFallidos == null) {
+            this.intentosFallidos = 0;
         }
     }
 }

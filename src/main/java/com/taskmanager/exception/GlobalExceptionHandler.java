@@ -52,6 +52,46 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(EmailNoVerificadoException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailNoVerificado(
+            EmailNoVerificadoException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.FORBIDDEN, "Forbidden",
+                ex.getMessage(), request);
+        body.put("code", "EMAIL_NOT_VERIFIED");
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(TokenExpiradoException.class)
+    public ResponseEntity<Map<String, Object>> handleTokenExpirado(
+            TokenExpiradoException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.BAD_REQUEST, "Bad Request",
+                ex.getMessage(), request);
+        body.put("code", "TOKEN_EXPIRED");
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CuentaBloqueadaException.class)
+    public ResponseEntity<Map<String, Object>> handleCuentaBloqueada(
+            CuentaBloqueadaException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.LOCKED, "Locked",
+                ex.getMessage(), request);
+        body.put("code", "ACCOUNT_LOCKED");
+        return new ResponseEntity<>(body, HttpStatus.LOCKED);
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleRateLimitExceeded(
+            RateLimitExceededException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests",
+                ex.getMessage(), request);
+        body.put("code", "RATE_LIMIT_EXCEEDED");
+        return new ResponseEntity<>(body, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(
             MethodArgumentNotValidException ex, WebRequest request) {
