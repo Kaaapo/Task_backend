@@ -30,7 +30,8 @@ public class GlobalExceptionHandler {
             BadCredentialsException ex, WebRequest request) {
 
         Map<String, Object> body = buildBody(HttpStatus.UNAUTHORIZED, "Unauthorized",
-                "Credenciales inválidas", request);
+                ex.getMessage(), request);
+        body.put("code", "BAD_CREDENTIALS");
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
@@ -100,8 +101,10 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
 
+        String firstError = errors.values().stream().findFirst().orElse("Error de validación");
         Map<String, Object> body = buildBody(HttpStatus.BAD_REQUEST, "Bad Request",
-                "Error de validación", request);
+                firstError, request);
+        body.put("code", "VALIDATION_ERROR");
         body.put("errors", errors);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

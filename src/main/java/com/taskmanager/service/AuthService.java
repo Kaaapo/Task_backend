@@ -100,13 +100,14 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
+                .orElseThrow(() -> new BadCredentialsException(
+                        "El correo electrónico o la contraseña son incorrectos. Verifica tus datos e intenta de nuevo."));
 
         verificarBloqueo(usuario);
 
         if (!usuario.getEmailVerificado()) {
             throw new EmailNoVerificadoException(
-                    "Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.");
+                    "Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada o solicita un nuevo enlace de verificación.");
         }
 
         try {
@@ -128,7 +129,7 @@ public class AuthService {
 
         } catch (BadCredentialsException e) {
             manejarLoginFallido(usuario);
-            throw e;
+            throw new BadCredentialsException(buildLoginFailedMessage(usuario));
         }
     }
 
@@ -261,10 +262,18 @@ public class AuthService {
             usuario.setCuentaBloqueadaHasta(LocalDateTime.now().plusMinutes(lockoutDurationMinutes));
             usuarioRepository.save(usuario);
             throw new CuentaBloqueadaException(
-                    "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por " + lockoutDurationMinutes + " minutos.");
+                    "Has superado el número máximo de intentos. Tu cuenta ha sido bloqueada temporalmente por " + lockoutDurationMinutes + " minutos.");
         }
 
         usuarioRepository.save(usuario);
+    }
+
+    private String buildLoginFailedMessage(Usuario usuario) {
+        int intentosRestantes = maxLoginAttempts - usuario.getIntentosFallidos();
+        if (intentosRestantes <= 2) {
+            return "Contraseña incorrecta. Te quedan " + intentosRestantes + " intentos antes de que tu cuenta sea bloqueada temporalmente.";
+        }
+        return "El correo electrónico o la contraseña son incorrectos. Verifica tus datos e intenta de nuevo.";
     }
 
     private void validarFortalezaPassword(String password) {
