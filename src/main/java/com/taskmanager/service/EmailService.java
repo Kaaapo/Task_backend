@@ -1,6 +1,9 @@
 package com.taskmanager.service;
 
+import java.io.UnsupportedEncodingException;
+
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +51,13 @@ public class EmailService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(appName + " <" + fromEmail + ">");
+            InternetAddress from;
+            try {
+                from = new InternetAddress(fromEmail, appName, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                from = new InternetAddress(fromEmail);
+            }
+            helper.setFrom(from);
             helper.setTo(destinatario);
             helper.setSubject(subject);
             helper.setText(html, true);

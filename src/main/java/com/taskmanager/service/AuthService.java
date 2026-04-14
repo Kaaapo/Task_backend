@@ -99,6 +99,7 @@ public class AuthService {
         final String nombre = usuario.getNombre();
         final String tokenVerif = tokenVerificacion;
         ejecutarDespuesDelCommit(() -> {
+            log.info("Enviando correo de verificación a {} (después del commit)", email);
             try {
                 emailService.enviarVerificacionEmail(email, nombre, tokenVerif);
             } catch (Exception e) {
