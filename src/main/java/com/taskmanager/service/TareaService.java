@@ -70,7 +70,7 @@ public class TareaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
 
         Usuario creador = usuarioRepository.findByEmail(emailCreador)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario. Por favor, inicia sesión nuevamente."));
 
         Tarea tarea = new Tarea();
         tarea.setTitulo(dto.getTitulo());

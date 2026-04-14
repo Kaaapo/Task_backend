@@ -68,7 +68,7 @@ public class AuthService {
 
     public MensajeResponse registro(RegistroRequest request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new RuntimeException("Ya existe una cuenta registrada con este correo electrónico.");
         }
 
         validarFortalezaPassword(request.getPassword());
@@ -135,7 +135,7 @@ public class AuthService {
 
     public MensajeResponse verificarEmail(String token) {
         Usuario usuario = usuarioRepository.findByTokenVerificacion(token)
-                .orElseThrow(() -> new TokenExpiradoException("Token de verificación inválido"));
+                .orElseThrow(() -> new TokenExpiradoException("El enlace de verificación no es válido. Solicita uno nuevo desde la página de inicio de sesión."));
 
         if (usuario.getTokenVerificacionExpiracion().isBefore(LocalDateTime.now())) {
             throw new TokenExpiradoException("El token de verificación ha expirado. Solicita uno nuevo.");
@@ -151,10 +151,10 @@ public class AuthService {
 
     public MensajeResponse reenviarVerificacion(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("No se encontró una cuenta con ese correo electrónico"));
+                .orElseThrow(() -> new RuntimeException("No se encontró una cuenta con ese correo electrónico."));
 
         if (usuario.getEmailVerificado()) {
-            throw new RuntimeException("Este correo electrónico ya está verificado");
+            throw new RuntimeException("Este correo electrónico ya está verificado. Puedes iniciar sesión directamente.");
         }
 
         String tokenVerificacion = UUID.randomUUID().toString();
@@ -196,7 +196,7 @@ public class AuthService {
         validarFortalezaPassword(nuevaPassword);
 
         TokenRecuperacion tokenRecuperacion = tokenRecuperacionRepository.findByTokenAndUsadoFalse(token)
-                .orElseThrow(() -> new TokenExpiradoException("Token de recuperación inválido o ya utilizado"));
+                .orElseThrow(() -> new TokenExpiradoException("El enlace de recuperación no es válido o ya fue utilizado. Solicita uno nuevo."));
 
         if (tokenRecuperacion.getFechaExpiracion().isBefore(LocalDateTime.now())) {
             throw new TokenExpiradoException("El token de recuperación ha expirado. Solicita uno nuevo.");

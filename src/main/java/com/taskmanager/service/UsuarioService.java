@@ -32,7 +32,7 @@ public class UsuarioService {
 
     public UsuarioDTO findByEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró una cuenta asociada a este correo electrónico."));
         return convertToDTO(usuario);
     }
 

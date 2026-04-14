@@ -1,7 +1,9 @@
 package com.taskmanager.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -22,6 +24,7 @@ public class GlobalExceptionHandler {
             ResourceNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = buildBody(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), request);
+        body.put("code", "RESOURCE_NOT_FOUND");
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
@@ -40,7 +43,7 @@ public class GlobalExceptionHandler {
             AuthenticationException ex, WebRequest request) {
 
         Map<String, Object> body = buildBody(HttpStatus.UNAUTHORIZED, "Unauthorized",
-                "Error de autenticación: " + ex.getMessage(), request);
+                "No se pudo verificar tu identidad. Por favor, inicia sesión nuevamente.", request);
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
@@ -109,6 +112,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.CONFLICT, "Conflict",
+                "No se puede completar la operación porque este registro está siendo utilizado por otros datos del sistema. Elimina o modifica las dependencias primero.",
+                request);
+        body.put("code", "DATA_INTEGRITY_ERROR");
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, WebRequest request) {
+
+        Map<String, Object> body = buildBody(HttpStatus.BAD_REQUEST, "Bad Request",
+                "Los datos enviados tienen un formato incorrecto. Verifica la información e intenta de nuevo.",
+                request);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(
             RuntimeException ex, WebRequest request) {
@@ -123,7 +147,7 @@ public class GlobalExceptionHandler {
             Exception ex, WebRequest request) {
 
         Map<String, Object> body = buildBody(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
-                ex.getMessage(), request);
+                "Ha ocurrido un error interno en el servidor. Por favor, intenta de nuevo más tarde.", request);
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

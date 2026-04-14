@@ -55,7 +55,7 @@ public class EmailService {
             log.info("Email enviado exitosamente a {}", destinatario);
         } catch (MessagingException e) {
             log.error("Error enviando email a {}: {}", destinatario, e.getMessage());
-            throw new RuntimeException("Error enviando email. Intente nuevamente.");
+            throw new RuntimeException("No se pudo enviar el correo electrónico. Por favor, intenta nuevamente en unos minutos.");
         }
     }
 

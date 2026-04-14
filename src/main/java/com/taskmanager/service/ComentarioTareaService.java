@@ -39,7 +39,7 @@ public class ComentarioTareaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea", tareaId));
 
         Usuario autor = usuarioRepository.findByEmail(emailAutor)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario. Por favor, inicia sesión nuevamente."));
 
         ComentarioTarea comentario = new ComentarioTarea();
         comentario.setContenido(dto.getContenido());

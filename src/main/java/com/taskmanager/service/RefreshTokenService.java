@@ -35,11 +35,11 @@ public class RefreshTokenService {
 
     public RefreshToken verificarRefreshToken(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new TokenExpiradoException("Refresh token no encontrado o inválido"));
+                .orElseThrow(() -> new TokenExpiradoException("Tu sesión no es válida. Por favor, inicia sesión nuevamente."));
 
         if (refreshToken.getFechaExpiracion().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new TokenExpiradoException("El refresh token ha expirado. Inicie sesión nuevamente.");
+            throw new TokenExpiradoException("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
         }
 
         return refreshToken;
