@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 /**
- * Avisa en logs si el correo o la URL del front en producción parecen mal configurados
- * (causa habitual de "no me llega el mail de verificación" en Railway).
+ * Avisa en logs si SendGrid o la URL del front en producción parecen mal configurados.
  */
 @Component
 @Profile("!test")
@@ -30,26 +29,27 @@ public class MailStartupDiagnostics implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        String user = environment.getProperty("spring.mail.username", "");
-        String pass = environment.getProperty("spring.mail.password", "");
+        String apiKey = environment.getProperty("sendgrid.api-key", "");
+        String fromEmail = environment.getProperty("sendgrid.from-email", "");
         String frontend = environment.getProperty("app.frontend-url", "");
 
-        if (looksLikePlaceholderMail(user, pass)) {
+        if (!hasText(apiKey) || !hasText(fromEmail)) {
             log.warn("""
-                    ========== CORREO SMTP ==========
-                    MAIL_USERNAME / MAIL_PASSWORD no parecen configurados (o siguen siendo los valores de ejemplo).
-                    Los correos de verificación y recuperación NO se enviarán hasta que configures en Railway:
-                    - MAIL_USERNAME = tu cuenta Gmail completa
-                    - MAIL_PASSWORD = contraseña de aplicación de 16 caracteres (Google: Cuenta → Seguridad → Verificación en 2 pasos → Contraseñas de aplicaciones)
-                    Revisa también los logs al registrarte: busca "Fallo al enviar correo".
-                    ==================================""");
+                    ========== CORREO (SendGrid) ==========
+                    Falta SENDGRID_API_KEY o SENDGRID_FROM_EMAIL.
+                    Crea una API Key y verifica un remitente (Single Sender) en https://app.sendgrid.com
+                    y define en Railway:
+                    - SENDGRID_API_KEY
+                    - SENDGRID_FROM_EMAIL (debe coincidir con el remitente verificado)
+                    Opcional: SENDGRID_FROM_NAME (por defecto usa app.name)
+                    ========================================""");
         }
 
-        if (frontend.contains("localhost") || frontend.isBlank()) {
+        if (frontend.contains("localhost") || !hasText(frontend)) {
             log.warn("""
                     ========== FRONTEND_URL ==========
                     app.frontend-url apunta a localhost o está vacío. Los enlaces dentro de los correos no llevarán a tu front público.
-                    Define FRONTEND_URL en Railway con la URL real (ej. https://tu-app.vercel.app o http://localhost:5173 solo para pruebas).
+                    Define FRONTEND_URL en Railway con la URL real (ej. https://tu-app.vercel.app).
                     ===================================""");
         }
 
@@ -58,12 +58,7 @@ public class MailStartupDiagnostics implements ApplicationRunner {
         }
     }
 
-    private static boolean looksLikePlaceholderMail(String user, String pass) {
-        if (user == null || user.isBlank() || pass == null || pass.isBlank()) {
-            return true;
-        }
-        String u = user.toLowerCase();
-        String p = pass.toLowerCase();
-        return u.contains("tucorreo") || p.contains("tu_app_password") || p.equals("password");
+    private static boolean hasText(String s) {
+        return s != null && !s.isBlank();
     }
 }

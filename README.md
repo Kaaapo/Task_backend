@@ -94,19 +94,22 @@ CORS_ORIGINS=https://tu-frontend.vercel.app,http://localhost:5173
 # Enlaces en correos (verificación, reset de contraseña)
 FRONTEND_URL=https://tu-frontend.vercel.app
 SPRING_PROFILES_ACTIVE=prod
-# Correo (Gmail recomendado): sin esto, el registro funciona pero NO se envían verificaciones
-MAIL_USERNAME=tu_cuenta@gmail.com
-MAIL_PASSWORD=xxxx xxxx xxxx xxxx
+# Correo vía SendGrid (API HTTPS; recomendado en Railway Hobby/Free donde SMTP está bloqueado)
+SENDGRID_API_KEY=SG.xxxxxxxxxxxx
+# Misma dirección que verificaste en SendGrid → Settings → Sender Authentication → Single Sender
+SENDGRID_FROM_EMAIL=tu_correo_verificado@gmail.com
+# Opcional (si no se define, se usa el nombre de la app)
+# SENDGRID_FROM_NAME=Task Manager
 ```
 
 Con el front usando `VITE_API_URL` apuntando a Railway, el navegador llama directo al API: incluye `http://localhost:5173` (y el dominio de producción del front) en `CORS_ORIGINS`.
 
 ### Correo de verificación no llega
 
-1. En **Railway** (servicio del backend), define **`MAIL_USERNAME`** y **`MAIL_PASSWORD`**. Los valores por defecto del repo (`tucorreo@gmail.com` / `tu_app_password`) **no envían correos reales**.
-2. Con **Gmail**: activa verificación en 2 pasos y crea una **contraseña de aplicaciones** (16 caracteres); usa esa cadena en `MAIL_PASSWORD` (sin espacios o con espacios, según la copia de Google).
+1. En [SendGrid](https://app.sendgrid.com): crea una **API Key** con permiso *Mail Send* y define **`SENDGRID_API_KEY`** en Railway.
+2. Verifica un remitente en **Settings → Sender Authentication → Single Sender** y usa exactamente ese correo en **`SENDGRID_FROM_EMAIL`**.
 3. **`FRONTEND_URL`**: debe ser la URL donde corre tu front (la misma base que usas en el navegador). Si queda en `localhost` y abres el sitio por otra URL, el enlace del correo será incorrecto.
-4. Tras un registro, revisa **Deploy logs** en Railway: si SMTP falla verás `Fallo SMTP al enviar` o el aviso de arranque `CORREO SMTP`.
+4. Tras un registro, revisa **Deploy logs** en Railway: errores de SendGrid aparecen como `SendGrid rechazó el envío` o el aviso de arranque `CORREO (SendGrid)`.
 5. **Verificar sin correo (prueba):** con el valor de `token_verificacion` en la base de datos, abre en el navegador:  
    `{FRONTEND_URL}/verificar-email?token=TU_UUID`  
    Ejemplo: `http://localhost:5173/verificar-email?token=36e39961-5fc1-403f-a61b-5e717421df38`

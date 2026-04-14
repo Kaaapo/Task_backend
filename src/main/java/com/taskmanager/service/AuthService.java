@@ -94,7 +94,7 @@ public class AuthService {
             log.error("Error enviando email de verificación a {}: {}", email, e.getMessage(), e);
             return new MensajeResponse(
                     "Tu cuenta se creó correctamente, pero no pudimos enviar el correo de verificación. "
-                            + "Configura MAIL_USERNAME y MAIL_PASSWORD (SMTP) en el servidor, o usa «Reenviar verificación» en el inicio de sesión.",
+                            + "Configura SENDGRID_API_KEY y SENDGRID_FROM_EMAIL en el servidor, o usa «Reenviar verificación» en el inicio de sesión.",
                     false);
         }
     }
@@ -173,7 +173,7 @@ public class AuthService {
         } catch (Exception e) {
             log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage(), e);
             return new MensajeResponse(
-                    "No pudimos enviar el correo. Comprueba MAIL_USERNAME y MAIL_PASSWORD (SMTP) en el servidor o intenta más tarde.",
+                    "No pudimos enviar el correo. Comprueba SENDGRID_API_KEY y SENDGRID_FROM_EMAIL en SendGrid o intenta más tarde.",
                     false);
         }
     }
@@ -201,7 +201,7 @@ public class AuthService {
         } catch (Exception e) {
             log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage(), e);
             return new MensajeResponse(
-                    "Registramos tu solicitud, pero no pudimos enviar el correo. Configura SMTP (MAIL_USERNAME / MAIL_PASSWORD) o intenta más tarde.",
+                    "Registramos tu solicitud, pero no pudimos enviar el correo. Configura SendGrid (SENDGRID_API_KEY / SENDGRID_FROM_EMAIL) o intenta más tarde.",
                     false);
         }
     }
