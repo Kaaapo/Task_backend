@@ -36,8 +36,9 @@ public class AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
+    /** Mín. 8, mayúscula, minúscula, número y al menos un símbolo (cualquier carácter que no sea letra ni dígito). Sin espacios. */
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#+\\-_])[A-Za-z\\d@$!%*?&#+\\-_]{8,}$"
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9])\\S{8,128}$"
     );
 
     @Autowired
@@ -280,7 +281,7 @@ public class AuthService {
     private void validarFortalezaPassword(String password) {
         if (!PASSWORD_PATTERN.matcher(password).matches()) {
             throw new RuntimeException(
-                    "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&#+-)");
+                    "La contraseña debe tener entre 8 y 128 caracteres, incluyendo una mayúscula, una minúscula, un número y al menos un símbolo (por ejemplo . @ # !). No uses espacios.");
         }
     }
 }
