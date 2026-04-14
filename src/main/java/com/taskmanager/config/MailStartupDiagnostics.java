@@ -16,7 +16,7 @@ import java.util.Arrays;
  * (causa habitual de "no me llega el mail de verificación" en Railway).
  */
 @Component
-@Profile("prod")
+@Profile("!test")
 @Order(2000)
 public class MailStartupDiagnostics implements ApplicationRunner {
 

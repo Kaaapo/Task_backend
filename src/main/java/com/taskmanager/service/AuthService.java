@@ -28,11 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @Transactional
@@ -64,6 +60,9 @@ public class AuthService {
     private EmailService emailService;
 
     @Autowired
+    private RegistroPersistenceService registroPersistenceService;
+
+    @Autowired
     private RefreshTokenService refreshTokenService;
 
     @Value("${security.max-login-attempts}")
@@ -79,35 +78,25 @@ public class AuthService {
 
         validarFortalezaPassword(request.getPassword());
 
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
-        usuario.setApodo(request.getApodo() != null ? request.getApodo() : request.getNombre());
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setTelefono(request.getTelefono());
-        usuario.setActivo(true);
-        usuario.setEmailVerificado(false);
-
         String tokenVerificacion = UUID.randomUUID().toString();
-        usuario.setTokenVerificacion(tokenVerificacion);
-        usuario.setTokenVerificacionExpiracion(LocalDateTime.now().plusHours(24));
+        LocalDateTime expiracion = LocalDateTime.now().plusHours(24);
+        Usuario usuario = registroPersistenceService.guardarUsuarioNuevo(request, tokenVerificacion, expiracion);
 
-        usuarioRepository.save(usuario);
-
-        final String email = usuario.getEmail();
-        final String nombre = usuario.getNombre();
-        final String tokenVerif = tokenVerificacion;
-        ejecutarDespuesDelCommit(() -> {
-            log.info("Enviando correo de verificación a {} (después del commit)", email);
-            try {
-                emailService.enviarVerificacionEmail(email, nombre, tokenVerif);
-            } catch (Exception e) {
-                log.error("Error enviando email de verificación a {}: {}", email, e.getMessage(), e);
-            }
-        });
-
-        return new MensajeResponse("Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.");
+        String email = usuario.getEmail();
+        String nombre = usuario.getNombre();
+        log.info("Enviando correo de verificación a {}", email);
+        try {
+            emailService.enviarVerificacionEmail(email, nombre, tokenVerificacion);
+            return new MensajeResponse(
+                    "Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.",
+                    true);
+        } catch (Exception e) {
+            log.error("Error enviando email de verificación a {}: {}", email, e.getMessage(), e);
+            return new MensajeResponse(
+                    "Tu cuenta se creó correctamente, pero no pudimos enviar el correo de verificación. "
+                            + "Configura MAIL_USERNAME y MAIL_PASSWORD (SMTP) en el servidor, o usa «Reenviar verificación» en el inicio de sesión.",
+                    false);
+        }
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -174,18 +163,19 @@ public class AuthService {
         usuario.setTokenVerificacionExpiracion(LocalDateTime.now().plusHours(24));
         usuarioRepository.save(usuario);
 
-        final String emailRv = usuario.getEmail();
-        final String nombreRv = usuario.getNombre();
-        final String tokenRv = tokenVerificacion;
-        ejecutarDespuesDelCommit(() -> {
-            try {
-                emailService.enviarVerificacionEmail(emailRv, nombreRv, tokenRv);
-            } catch (Exception e) {
-                log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage(), e);
-            }
-        });
-
-        return new MensajeResponse("Se ha enviado un nuevo correo de verificación. Revisa tu bandeja de entrada.");
+        String emailRv = usuario.getEmail();
+        String nombreRv = usuario.getNombre();
+        try {
+            emailService.enviarVerificacionEmail(emailRv, nombreRv, tokenVerificacion);
+            return new MensajeResponse(
+                    "Se ha enviado un nuevo correo de verificación. Revisa tu bandeja de entrada.",
+                    true);
+        } catch (Exception e) {
+            log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage(), e);
+            return new MensajeResponse(
+                    "No pudimos enviar el correo. Comprueba MAIL_USERNAME y MAIL_PASSWORD (SMTP) en el servidor o intenta más tarde.",
+                    false);
+        }
     }
 
     public MensajeResponse solicitarResetPassword(String email) {
@@ -201,19 +191,19 @@ public class AuthService {
         tokenRecuperacion.setUsado(false);
         tokenRecuperacionRepository.save(tokenRecuperacion);
 
-        final String emailRs = usuario.getEmail();
-        final String nombreRs = usuario.getNombre();
-        final String tokenRs = token;
-        ejecutarDespuesDelCommit(() -> {
-            try {
-                emailService.enviarRecuperacionPassword(emailRs, nombreRs, tokenRs);
-            } catch (Exception e) {
-                log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage(), e);
-            }
-        });
-
-        return new MensajeResponse(
-                "Te hemos enviado un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.");
+        String emailRs = usuario.getEmail();
+        String nombreRs = usuario.getNombre();
+        try {
+            emailService.enviarRecuperacionPassword(emailRs, nombreRs, token);
+            return new MensajeResponse(
+                    "Te hemos enviado un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.",
+                    true);
+        } catch (Exception e) {
+            log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage(), e);
+            return new MensajeResponse(
+                    "Registramos tu solicitud, pero no pudimos enviar el correo. Configura SMTP (MAIL_USERNAME / MAIL_PASSWORD) o intenta más tarde.",
+                    false);
+        }
     }
 
     public MensajeResponse resetPassword(String token, String nuevaPassword) {
@@ -307,20 +297,4 @@ public class AuthService {
         }
     }
 
-    /**
-     * Ejecuta el envío de correo fuera del hilo de la petición HTTP y después de confirmar la transacción,
-     * para que el cliente no espere al SMTP (evita timeouts en el front).
-     */
-    private void ejecutarDespuesDelCommit(Runnable tarea) {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    CompletableFuture.runAsync(tarea);
-                }
-            });
-        } else {
-            CompletableFuture.runAsync(tarea);
-        }
-    }
 }
