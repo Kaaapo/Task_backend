@@ -102,7 +102,7 @@ public class AuthService {
             try {
                 emailService.enviarVerificacionEmail(email, nombre, tokenVerif);
             } catch (Exception e) {
-                log.error("Error enviando email de verificación a {}: {}", email, e.getMessage());
+                log.error("Error enviando email de verificación a {}: {}", email, e.getMessage(), e);
             }
         });
 
@@ -180,7 +180,7 @@ public class AuthService {
             try {
                 emailService.enviarVerificacionEmail(emailRv, nombreRv, tokenRv);
             } catch (Exception e) {
-                log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage());
+                log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage(), e);
             }
         });
 
@@ -207,7 +207,7 @@ public class AuthService {
             try {
                 emailService.enviarRecuperacionPassword(emailRs, nombreRs, tokenRs);
             } catch (Exception e) {
-                log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage());
+                log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage(), e);
             }
         });
 

@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -52,9 +53,12 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(html, true);
             mailSender.send(message);
-            log.info("Email enviado exitosamente a {}", destinatario);
+            log.info("Correo enviado correctamente a {}", destinatario);
         } catch (MessagingException e) {
-            log.error("Error enviando email a {}: {}", destinatario, e.getMessage());
+            log.error("Error al crear el mensaje MIME para {}: {}", destinatario, e.getMessage(), e);
+            throw new RuntimeException("No se pudo enviar el correo electrónico. Por favor, intenta nuevamente en unos minutos.");
+        } catch (MailException e) {
+            log.error("Fallo SMTP al enviar a {} ({}): {}", destinatario, e.getClass().getSimpleName(), e.getMessage(), e);
             throw new RuntimeException("No se pudo enviar el correo electrónico. Por favor, intenta nuevamente en unos minutos.");
         }
     }
