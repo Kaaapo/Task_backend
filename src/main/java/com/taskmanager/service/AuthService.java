@@ -6,6 +6,7 @@ import com.taskmanager.dto.MensajeResponse;
 import com.taskmanager.dto.RegistroRequest;
 import com.taskmanager.exception.CuentaBloqueadaException;
 import com.taskmanager.exception.EmailNoVerificadoException;
+import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.exception.TokenExpiradoException;
 import com.taskmanager.model.RefreshToken;
 import com.taskmanager.model.TokenRecuperacion;
@@ -168,12 +169,9 @@ public class AuthService {
     }
 
     public MensajeResponse solicitarResetPassword(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-
-        // No revelar si el email existe o no (seguridad)
-        if (usuario == null) {
-            return new MensajeResponse("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.");
-        }
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No hay ninguna cuenta registrada con este correo electrónico. Verifica el correo o regístrate."));
 
         String token = UUID.randomUUID().toString();
         TokenRecuperacion tokenRecuperacion = new TokenRecuperacion();
@@ -187,9 +185,12 @@ public class AuthService {
             emailService.enviarRecuperacionPassword(usuario.getEmail(), usuario.getNombre(), token);
         } catch (Exception e) {
             log.error("Error enviando email de recuperación a {}: {}", usuario.getEmail(), e.getMessage());
+            throw new RuntimeException(
+                    "No se pudo enviar el correo de recuperación. Intenta de nuevo en unos minutos o revisa la configuración del servidor de correo.");
         }
 
-        return new MensajeResponse("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.");
+        return new MensajeResponse(
+                "Te hemos enviado un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.");
     }
 
     public MensajeResponse resetPassword(String token, String nuevaPassword) {

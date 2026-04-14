@@ -89,9 +89,14 @@ DATABASE_URL=jdbc:postgresql://<host>:<port>/<db>   # Railway la provee automát
 DB_USERNAME=<usuario>                                 # Desde las credenciales de Railway PostgreSQL
 DB_PASSWORD=<password>                                # Desde las credenciales de Railway PostgreSQL
 JWT_SECRET=<clave-segura-de-256-bits>
-CORS_ORIGINS=https://tu-frontend.vercel.app
+# Orígenes del front separados por coma (Vercel + desarrollo local con VITE_API_URL directo)
+CORS_ORIGINS=https://tu-frontend.vercel.app,http://localhost:5173
+# Enlaces en correos (verificación, reset de contraseña)
+FRONTEND_URL=https://tu-frontend.vercel.app
 SPRING_PROFILES_ACTIVE=prod
 ```
+
+Con el front usando `VITE_API_URL` apuntando a Railway, el navegador llama directo al API: incluye `http://localhost:5173` (y el dominio de producción del front) en `CORS_ORIGINS`.
 
 ### 3. Build
 
