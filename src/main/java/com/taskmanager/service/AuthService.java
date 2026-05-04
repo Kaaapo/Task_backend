@@ -60,6 +60,9 @@ public class AuthService {
     private EmailService emailService;
 
     @Autowired
+    private RegistroPersistenceService registroPersistenceService;
+
+    @Autowired
     private RefreshTokenService refreshTokenService;
 
     @Value("${security.max-login-attempts}")
@@ -75,29 +78,25 @@ public class AuthService {
 
         validarFortalezaPassword(request.getPassword());
 
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
-        usuario.setApodo(request.getApodo() != null ? request.getApodo() : request.getNombre());
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setTelefono(request.getTelefono());
-        usuario.setActivo(true);
-        usuario.setEmailVerificado(false);
-
         String tokenVerificacion = UUID.randomUUID().toString();
-        usuario.setTokenVerificacion(tokenVerificacion);
-        usuario.setTokenVerificacionExpiracion(LocalDateTime.now().plusHours(24));
+        LocalDateTime expiracion = LocalDateTime.now().plusHours(24);
+        Usuario usuario = registroPersistenceService.guardarUsuarioNuevo(request, tokenVerificacion, expiracion);
 
-        usuarioRepository.save(usuario);
-
+        String email = usuario.getEmail();
+        String nombre = usuario.getNombre();
+        log.info("Enviando correo de verificación a {}", email);
         try {
-            emailService.enviarVerificacionEmail(usuario.getEmail(), usuario.getNombre(), tokenVerificacion);
+            emailService.enviarVerificacionEmail(email, nombre, tokenVerificacion);
+            return new MensajeResponse(
+                    "Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.",
+                    true);
         } catch (Exception e) {
-            log.error("Error enviando email de verificación a {}: {}", usuario.getEmail(), e.getMessage());
+            log.error("Error enviando email de verificación a {}: {}", email, e.getMessage(), e);
+            return new MensajeResponse(
+                    "Tu cuenta se creó correctamente, pero no pudimos enviar el correo de verificación. "
+                            + "Configura SENDGRID_API_KEY y SENDGRID_FROM_EMAIL en el servidor, o usa «Reenviar verificación» en el inicio de sesión.",
+                    false);
         }
-
-        return new MensajeResponse("Registro exitoso. Revisa tu correo electrónico para verificar tu cuenta.");
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -164,9 +163,19 @@ public class AuthService {
         usuario.setTokenVerificacionExpiracion(LocalDateTime.now().plusHours(24));
         usuarioRepository.save(usuario);
 
-        emailService.enviarVerificacionEmail(usuario.getEmail(), usuario.getNombre(), tokenVerificacion);
-
-        return new MensajeResponse("Se ha enviado un nuevo correo de verificación. Revisa tu bandeja de entrada.");
+        String emailRv = usuario.getEmail();
+        String nombreRv = usuario.getNombre();
+        try {
+            emailService.enviarVerificacionEmail(emailRv, nombreRv, tokenVerificacion);
+            return new MensajeResponse(
+                    "Se ha enviado un nuevo correo de verificación. Revisa tu bandeja de entrada.",
+                    true);
+        } catch (Exception e) {
+            log.error("Error reenviando verificación a {}: {}", emailRv, e.getMessage(), e);
+            return new MensajeResponse(
+                    "No pudimos enviar el correo. Comprueba SENDGRID_API_KEY y SENDGRID_FROM_EMAIL en SendGrid o intenta más tarde.",
+                    false);
+        }
     }
 
     public MensajeResponse solicitarResetPassword(String email) {
@@ -182,16 +191,19 @@ public class AuthService {
         tokenRecuperacion.setUsado(false);
         tokenRecuperacionRepository.save(tokenRecuperacion);
 
+        String emailRs = usuario.getEmail();
+        String nombreRs = usuario.getNombre();
         try {
-            emailService.enviarRecuperacionPassword(usuario.getEmail(), usuario.getNombre(), token);
+            emailService.enviarRecuperacionPassword(emailRs, nombreRs, token);
+            return new MensajeResponse(
+                    "Te hemos enviado un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.",
+                    true);
         } catch (Exception e) {
-            log.error("Error enviando email de recuperación a {}: {}", usuario.getEmail(), e.getMessage());
-            throw new RuntimeException(
-                    "No se pudo enviar el correo de recuperación. Intenta de nuevo en unos minutos o revisa la configuración del servidor de correo.");
+            log.error("Error enviando email de recuperación a {}: {}", emailRs, e.getMessage(), e);
+            return new MensajeResponse(
+                    "Registramos tu solicitud, pero no pudimos enviar el correo. Configura SendGrid (SENDGRID_API_KEY / SENDGRID_FROM_EMAIL) o intenta más tarde.",
+                    false);
         }
-
-        return new MensajeResponse(
-                "Te hemos enviado un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada y la carpeta de spam.");
     }
 
     public MensajeResponse resetPassword(String token, String nuevaPassword) {
@@ -284,4 +296,5 @@ public class AuthService {
                     "La contraseña debe tener entre 8 y 128 caracteres, incluyendo una mayúscula, una minúscula, un número y al menos un símbolo (por ejemplo . @ # !). No uses espacios.");
         }
     }
+
 }
