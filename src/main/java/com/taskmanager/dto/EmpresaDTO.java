@@ -21,7 +21,8 @@ public class EmpresaDTO {
     private String sector;
     private Long creadorId;
     private String creadorNombre;
-    private Long estadoId;
-    private String estadoNombre;
+    private String pais;
+    private String departamento;
+    private String ciudad;
     private LocalDateTime fechaCreacion;
 }

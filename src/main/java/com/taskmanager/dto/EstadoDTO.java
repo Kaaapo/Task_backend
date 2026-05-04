@@ -15,5 +15,4 @@ public class EstadoDTO {
     private String nombre;
     private String descripcion;
     private String color;
-    private Integer orden;
 }

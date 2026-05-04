@@ -4,15 +4,15 @@
 -- ===================================
 
 -- Estados del sistema
-INSERT INTO estados (nombre, descripcion, color, orden) VALUES
-    ('Activo', 'Elemento activo y operativo', '#22c55e', 1),
-    ('Inactivo', 'Elemento inactivo o deshabilitado', '#6b7280', 2),
-    ('En Proceso', 'Elemento en desarrollo o progreso', '#3b82f6', 3),
-    ('Completado', 'Elemento finalizado exitosamente', '#10b981', 4),
-    ('Pausado', 'Elemento temporalmente detenido', '#f59e0b', 5),
-    ('Cancelado', 'Elemento cancelado permanentemente', '#ef4444', 6),
-    ('Pendiente', 'Elemento pendiente de iniciar', '#8b5cf6', 7),
-    ('En Revisión', 'Elemento en proceso de revisión', '#06b6d4', 8);
+INSERT INTO estados (nombre, descripcion, color) VALUES
+    ('Activo', 'Elemento activo y operativo', '#22c55e'),
+    ('Inactivo', 'Elemento inactivo o deshabilitado', '#6b7280'),
+    ('En Proceso', 'Elemento en desarrollo o progreso', '#3b82f6'),
+    ('Completado', 'Elemento finalizado exitosamente', '#10b981'),
+    ('Pausado', 'Elemento temporalmente detenido', '#f59e0b'),
+    ('Cancelado', 'Elemento cancelado permanentemente', '#ef4444'),
+    ('Pendiente', 'Elemento pendiente de iniciar', '#8b5cf6'),
+    ('En Revisión', 'Elemento en proceso de revisión', '#06b6d4');
 
 -- Tipos de proyecto (estado_id = 1 = Activo)
 INSERT INTO tipos_proyecto (nombre, descripcion, color, icono, estado_id) VALUES

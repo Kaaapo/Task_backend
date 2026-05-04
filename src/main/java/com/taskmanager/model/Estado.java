@@ -24,6 +24,4 @@ public class Estado {
 
     @Column(length = 7)
     private String color;
-
-    private Integer orden;
 }

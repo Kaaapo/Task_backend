@@ -46,9 +46,14 @@ public class Empresa {
     @JoinColumn(name = "creador_id")
     private Usuario creador;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id", nullable = false)
-    private Estado estado;
+    @Column(length = 100)
+    private String pais;
+
+    @Column(length = 100)
+    private String departamento;
+
+    @Column(length = 100)
+    private String ciudad;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;

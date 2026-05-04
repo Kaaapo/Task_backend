@@ -3,10 +3,8 @@ package com.taskmanager.service;
 import com.taskmanager.dto.EmpresaDTO;
 import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Empresa;
-import com.taskmanager.model.Estado;
 import com.taskmanager.model.Usuario;
 import com.taskmanager.repository.EmpresaRepository;
-import com.taskmanager.repository.EstadoRepository;
 import com.taskmanager.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +19,6 @@ public class EmpresaService {
 
     @Autowired
     private EmpresaRepository empresaRepository;
-
-    @Autowired
-    private EstadoRepository estadoRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -47,9 +42,6 @@ public class EmpresaService {
     }
 
     public EmpresaDTO create(EmpresaDTO dto, String emailCreador) {
-        Estado estado = estadoRepository.findById(dto.getEstadoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
-
         Usuario creador = usuarioRepository.findByEmail(emailCreador)
                 .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario. Por favor, inicia sesión nuevamente."));
 
@@ -62,8 +54,10 @@ public class EmpresaService {
         empresa.setDireccion(dto.getDireccion());
         empresa.setLogoUrl(dto.getLogoUrl());
         empresa.setSector(dto.getSector());
+        empresa.setPais(dto.getPais());
+        empresa.setDepartamento(dto.getDepartamento());
+        empresa.setCiudad(dto.getCiudad());
         empresa.setCreador(creador);
-        empresa.setEstado(estado);
 
         Empresa saved = empresaRepository.save(empresa);
         return convertToDTO(saved);
@@ -73,9 +67,6 @@ public class EmpresaService {
         Empresa empresa = empresaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa", id));
 
-        Estado estado = estadoRepository.findById(dto.getEstadoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
-
         empresa.setNombre(dto.getNombre());
         empresa.setDescripcion(dto.getDescripcion());
         empresa.setNit(dto.getNit());
@@ -84,7 +75,9 @@ public class EmpresaService {
         empresa.setDireccion(dto.getDireccion());
         empresa.setLogoUrl(dto.getLogoUrl());
         empresa.setSector(dto.getSector());
-        empresa.setEstado(estado);
+        empresa.setPais(dto.getPais());
+        empresa.setDepartamento(dto.getDepartamento());
+        empresa.setCiudad(dto.getCiudad());
 
         Empresa updated = empresaRepository.save(empresa);
         return convertToDTO(updated);
@@ -114,8 +107,9 @@ public class EmpresaService {
                     ? empresa.getCreador().getApodo()
                     : empresa.getCreador().getNombre());
         }
-        dto.setEstadoId(empresa.getEstado().getId());
-        dto.setEstadoNombre(empresa.getEstado().getNombre());
+        dto.setPais(empresa.getPais());
+        dto.setDepartamento(empresa.getDepartamento());
+        dto.setCiudad(empresa.getCiudad());
         dto.setFechaCreacion(empresa.getFechaCreacion());
         return dto;
     }
