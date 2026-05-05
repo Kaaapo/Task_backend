@@ -27,8 +27,4 @@ public class TipoProyecto {
 
     @Column(length = 50)
     private String icono;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id", nullable = false)
-    private Estado estado;
 }

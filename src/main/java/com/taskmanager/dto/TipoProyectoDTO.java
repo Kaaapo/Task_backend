@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para TipoProyecto
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +13,4 @@ public class TipoProyectoDTO {
     private String descripcion;
     private String color;
     private String icono;
-    private Long estadoId;
-    private String estadoNombre;
 }

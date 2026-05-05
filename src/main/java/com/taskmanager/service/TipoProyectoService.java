@@ -2,9 +2,7 @@ package com.taskmanager.service;
 
 import com.taskmanager.dto.TipoProyectoDTO;
 import com.taskmanager.exception.ResourceNotFoundException;
-import com.taskmanager.model.Estado;
 import com.taskmanager.model.TipoProyecto;
-import com.taskmanager.repository.EstadoRepository;
 import com.taskmanager.repository.TipoProyectoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +18,6 @@ public class TipoProyectoService {
     @Autowired
     private TipoProyectoRepository tipoProyectoRepository;
     
-    @Autowired
-    private EstadoRepository estadoRepository;
-    
     public List<TipoProyectoDTO> findAll() {
         return tipoProyectoRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -36,15 +31,11 @@ public class TipoProyectoService {
     }
     
     public TipoProyectoDTO create(TipoProyectoDTO dto) {
-        Estado estado = estadoRepository.findById(dto.getEstadoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
-        
         TipoProyecto tipoProyecto = new TipoProyecto();
         tipoProyecto.setNombre(dto.getNombre());
         tipoProyecto.setDescripcion(dto.getDescripcion());
         tipoProyecto.setColor(dto.getColor());
         tipoProyecto.setIcono(dto.getIcono());
-        tipoProyecto.setEstado(estado);
         
         TipoProyecto saved = tipoProyectoRepository.save(tipoProyecto);
         return convertToDTO(saved);
@@ -54,14 +45,10 @@ public class TipoProyectoService {
         TipoProyecto tipoProyecto = tipoProyectoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("TipoProyecto", id));
         
-        Estado estado = estadoRepository.findById(dto.getEstadoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
-        
         tipoProyecto.setNombre(dto.getNombre());
         tipoProyecto.setDescripcion(dto.getDescripcion());
         tipoProyecto.setColor(dto.getColor());
         tipoProyecto.setIcono(dto.getIcono());
-        tipoProyecto.setEstado(estado);
         
         TipoProyecto updated = tipoProyectoRepository.save(tipoProyecto);
         return convertToDTO(updated);
@@ -80,9 +67,7 @@ public class TipoProyectoService {
                 tipoProyecto.getNombre(),
                 tipoProyecto.getDescripcion(),
                 tipoProyecto.getColor(),
-                tipoProyecto.getIcono(),
-                tipoProyecto.getEstado().getId(),
-                tipoProyecto.getEstado().getNombre()
+                tipoProyecto.getIcono()
         );
     }
 }

@@ -5,8 +5,10 @@ import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.*;
 import com.taskmanager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,8 +117,11 @@ public class TareaService {
     }
 
     public void delete(Long id) {
-        if (!tareaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Tarea", id);
+        Tarea tarea = tareaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tarea", id));
+        if (!"Completado".equalsIgnoreCase(tarea.getEstado().getNombre())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Solo se pueden eliminar tareas con estado 'Completado'");
         }
         tareaRepository.deleteById(id);
     }
