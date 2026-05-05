@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.EmpresaDTO;
-import com.taskmanager.service.EmpresaService;
+import com.taskmanager.service.IEmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class EmpresaController {
 
     @Autowired
-    private EmpresaService empresaService;
+    private IEmpresaService empresaService;
 
     @GetMapping
     public ResponseEntity<List<EmpresaDTO>> getAll() {

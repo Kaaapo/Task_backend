@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.MiembroProyectoDTO;
-import com.taskmanager.service.MiembroProyectoService;
+import com.taskmanager.service.IMiembroProyectoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class MiembroProyectoController {
 
     @Autowired
-    private MiembroProyectoService miembroProyectoService;
+    private IMiembroProyectoService miembroProyectoService;
 
     @GetMapping
     public ResponseEntity<List<MiembroProyectoDTO>> getMiembros(@PathVariable Long proyectoId) {

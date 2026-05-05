@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class TareaService {
+public class TareaService implements ITareaService {
 
     @Autowired
     private TareaRepository tareaRepository;

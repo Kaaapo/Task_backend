@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.EstadoDTO;
-import com.taskmanager.service.EstadoService;
+import com.taskmanager.service.IEstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.List;
 public class EstadoController {
 
     @Autowired
-    private EstadoService estadoService;
+    private IEstadoService estadoService;
 
     @GetMapping
     public ResponseEntity<List<EstadoDTO>> getAll() {

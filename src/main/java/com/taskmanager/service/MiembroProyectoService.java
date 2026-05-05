@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class MiembroProyectoService {
+public class MiembroProyectoService implements IMiembroProyectoService {
 
     @Autowired
     private MiembroProyectoRepository miembroProyectoRepository;

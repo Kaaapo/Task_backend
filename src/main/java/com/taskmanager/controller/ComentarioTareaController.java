@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.ComentarioTareaDTO;
-import com.taskmanager.service.ComentarioTareaService;
+import com.taskmanager.service.IComentarioTareaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ComentarioTareaController {
 
     @Autowired
-    private ComentarioTareaService comentarioTareaService;
+    private IComentarioTareaService comentarioTareaService;
 
     @GetMapping
     public ResponseEntity<List<ComentarioTareaDTO>> getComentarios(@PathVariable Long tareaId) {

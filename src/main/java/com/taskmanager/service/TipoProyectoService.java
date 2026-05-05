@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class TipoProyectoService {
+public class TipoProyectoService implements ITipoProyectoService {
     
     @Autowired
     private TipoProyectoRepository tipoProyectoRepository;

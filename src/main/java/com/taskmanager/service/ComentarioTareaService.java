@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ComentarioTareaService {
+public class ComentarioTareaService implements IComentarioTareaService {
 
     @Autowired
     private ComentarioTareaRepository comentarioTareaRepository;

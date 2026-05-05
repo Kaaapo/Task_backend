@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class EstadoService {
+public class EstadoService implements IEstadoService {
 
     @Autowired
     private EstadoRepository estadoRepository;

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class EmpresaService {
+public class EmpresaService implements IEmpresaService {
 
     @Autowired
     private EmpresaRepository empresaRepository;

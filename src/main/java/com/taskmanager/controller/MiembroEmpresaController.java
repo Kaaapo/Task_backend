@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.MiembroEmpresaDTO;
-import com.taskmanager.service.MiembroEmpresaService;
+import com.taskmanager.service.IMiembroEmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class MiembroEmpresaController {
 
     @Autowired
-    private MiembroEmpresaService miembroEmpresaService;
+    private IMiembroEmpresaService miembroEmpresaService;
 
     @GetMapping
     public ResponseEntity<List<MiembroEmpresaDTO>> getMiembros(@PathVariable Long empresaId) {

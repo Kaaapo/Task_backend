@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.ProyectoDTO;
-import com.taskmanager.service.ProyectoService;
+import com.taskmanager.service.IProyectoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ProyectoController {
 
     @Autowired
-    private ProyectoService proyectoService;
+    private IProyectoService proyectoService;
 
     @GetMapping
     public ResponseEntity<List<ProyectoDTO>> getAll() {

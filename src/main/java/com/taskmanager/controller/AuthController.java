@@ -2,7 +2,7 @@ package com.taskmanager.controller;
 
 import com.taskmanager.dto.*;
 import com.taskmanager.service.AuthService;
-import com.taskmanager.service.UsuarioService;
+import com.taskmanager.service.IUsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private IUsuarioService usuarioService;
 
     @PostMapping("/registro")
     public ResponseEntity<MensajeResponse> registro(@Valid @RequestBody RegistroRequest request) {

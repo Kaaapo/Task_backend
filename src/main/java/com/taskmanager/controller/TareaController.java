@@ -1,7 +1,7 @@
 package com.taskmanager.controller;
 
 import com.taskmanager.dto.TareaDTO;
-import com.taskmanager.service.TareaService;
+import com.taskmanager.service.ITareaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.List;
 public class TareaController {
 
     @Autowired
-    private TareaService tareaService;
+    private ITareaService tareaService;
 
     @GetMapping
     public ResponseEntity<List<TareaDTO>> getAll() {
