@@ -96,6 +96,12 @@ public class TareaService {
         Estado estado = estadoRepository.findById(dto.getEstadoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
 
+        if (dto.getProyectoId() != null && !dto.getProyectoId().equals(tarea.getProyecto().getId())) {
+            Proyecto proyecto = proyectoRepository.findById(dto.getProyectoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Proyecto", dto.getProyectoId()));
+            tarea.setProyecto(proyecto);
+        }
+
         tarea.setTitulo(dto.getTitulo());
         tarea.setDescripcion(dto.getDescripcion());
         tarea.setEstado(estado);

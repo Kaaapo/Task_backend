@@ -66,7 +66,6 @@ public class ProyectoService {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre(dto.getNombre());
         proyecto.setDescripcion(dto.getDescripcion());
-        proyecto.setCodigo(dto.getCodigo());
         proyecto.setEmpresa(empresa);
         proyecto.setTipoProyecto(tipoProyecto);
         proyecto.setEstado(estado);
@@ -96,7 +95,6 @@ public class ProyectoService {
 
         proyecto.setNombre(dto.getNombre());
         proyecto.setDescripcion(dto.getDescripcion());
-        proyecto.setCodigo(dto.getCodigo());
         proyecto.setEmpresa(empresa);
         proyecto.setTipoProyecto(tipoProyecto);
         proyecto.setEstado(estado);
@@ -125,7 +123,6 @@ public class ProyectoService {
         dto.setId(proyecto.getId());
         dto.setNombre(proyecto.getNombre());
         dto.setDescripcion(proyecto.getDescripcion());
-        dto.setCodigo(proyecto.getCodigo());
         dto.setEmpresaId(proyecto.getEmpresa().getId());
         dto.setEmpresaNombre(proyecto.getEmpresa().getNombre());
         dto.setTipoProyectoId(proyecto.getTipoProyecto().getId());

@@ -15,12 +15,12 @@ INSERT INTO estados (nombre, descripcion, color) VALUES
     ('En Revisión', 'Elemento en proceso de revisión', '#06b6d4');
 
 -- Tipos de proyecto
-INSERT INTO tipos_proyecto (nombre, descripcion, color, icono) VALUES
-    ('Software', 'Desarrollo de aplicaciones y sistemas', '#3b82f6', 'code'),
-    ('Web', 'Desarrollo de sitios y aplicaciones web', '#8b5cf6', 'globe'),
-    ('Móvil', 'Desarrollo de aplicaciones móviles', '#10b981', 'smartphone'),
-    ('Infraestructura', 'Proyectos de infraestructura tecnológica', '#f59e0b', 'server'),
-    ('Diseño', 'Proyectos de diseño gráfico y UX/UI', '#ec4899', 'palette'),
-    ('Marketing', 'Campañas y estrategias de marketing', '#14b8a6', 'megaphone'),
-    ('Consultoría', 'Proyectos de consultoría y asesoría', '#6366f1', 'briefcase'),
-    ('Investigación', 'Proyectos de investigación y desarrollo', '#f97316', 'search');
+INSERT INTO tipos_proyecto (nombre, descripcion, color) VALUES
+    ('Software', 'Desarrollo de aplicaciones y sistemas', '#3b82f6'),
+    ('Web', 'Desarrollo de sitios y aplicaciones web', '#8b5cf6'),
+    ('Móvil', 'Desarrollo de aplicaciones móviles', '#10b981'),
+    ('Infraestructura', 'Proyectos de infraestructura tecnológica', '#f59e0b'),
+    ('Diseño', 'Proyectos de diseño gráfico y UX/UI', '#ec4899'),
+    ('Marketing', 'Campañas y estrategias de marketing', '#14b8a6'),
+    ('Consultoría', 'Proyectos de consultoría y asesoría', '#6366f1'),
+    ('Investigación', 'Proyectos de investigación y desarrollo', '#f97316');

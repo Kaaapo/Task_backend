@@ -35,7 +35,6 @@ public class TipoProyectoService {
         tipoProyecto.setNombre(dto.getNombre());
         tipoProyecto.setDescripcion(dto.getDescripcion());
         tipoProyecto.setColor(dto.getColor());
-        tipoProyecto.setIcono(dto.getIcono());
         
         TipoProyecto saved = tipoProyectoRepository.save(tipoProyecto);
         return convertToDTO(saved);
@@ -48,7 +47,6 @@ public class TipoProyectoService {
         tipoProyecto.setNombre(dto.getNombre());
         tipoProyecto.setDescripcion(dto.getDescripcion());
         tipoProyecto.setColor(dto.getColor());
-        tipoProyecto.setIcono(dto.getIcono());
         
         TipoProyecto updated = tipoProyectoRepository.save(tipoProyecto);
         return convertToDTO(updated);
@@ -66,8 +64,7 @@ public class TipoProyectoService {
                 tipoProyecto.getId(),
                 tipoProyecto.getNombre(),
                 tipoProyecto.getDescripcion(),
-                tipoProyecto.getColor(),
-                tipoProyecto.getIcono()
+                tipoProyecto.getColor()
         );
     }
 }

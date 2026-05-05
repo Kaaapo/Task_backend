@@ -15,7 +15,6 @@ public class ProyectoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
-    private String codigo;
     private Long empresaId;
     private String empresaNombre;
     private Long tipoProyectoId;

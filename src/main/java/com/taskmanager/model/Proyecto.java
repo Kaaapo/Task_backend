@@ -30,9 +30,6 @@ public class Proyecto {
     @Column(length = 1000)
     private String descripcion;
 
-    @Column(length = 20, unique = true)
-    private String codigo;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;

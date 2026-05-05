@@ -24,7 +24,4 @@ public class TipoProyecto {
     
     @Column(length = 7)
     private String color;
-
-    @Column(length = 50)
-    private String icono;
 }

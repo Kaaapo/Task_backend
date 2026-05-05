@@ -12,5 +12,4 @@ public class TipoProyectoDTO {
     private String nombre;
     private String descripcion;
     private String color;
-    private String icono;
 }
