@@ -32,6 +32,15 @@ public class ProyectoService implements IProyectoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private TareaRepository tareaRepository;
+
+    @Autowired
+    private ComentarioTareaRepository comentarioTareaRepository;
+
+    @Autowired
+    private MiembroProyectoRepository miembroProyectoRepository;
+
     public List<ProyectoDTO> findAll() {
         return proyectoRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -115,6 +124,9 @@ public class ProyectoService implements IProyectoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Solo se pueden eliminar proyectos con estado 'Completado'");
         }
+        comentarioTareaRepository.deleteByProyectoId(id);
+        miembroProyectoRepository.deleteByProyectoId(id);
+        tareaRepository.softDeleteByProyectoId(id);
         proyectoRepository.deleteById(id);
     }
 

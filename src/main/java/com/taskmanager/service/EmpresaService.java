@@ -4,8 +4,7 @@ import com.taskmanager.dto.EmpresaDTO;
 import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Empresa;
 import com.taskmanager.model.Usuario;
-import com.taskmanager.repository.EmpresaRepository;
-import com.taskmanager.repository.UsuarioRepository;
+import com.taskmanager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,21 @@ public class EmpresaService implements IEmpresaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ProyectoRepository proyectoRepository;
+
+    @Autowired
+    private TareaRepository tareaRepository;
+
+    @Autowired
+    private ComentarioTareaRepository comentarioTareaRepository;
+
+    @Autowired
+    private MiembroProyectoRepository miembroProyectoRepository;
+
+    @Autowired
+    private MiembroEmpresaRepository miembroEmpresaRepository;
 
     public List<EmpresaDTO> findAll() {
         return empresaRepository.findAll().stream()
@@ -87,6 +101,14 @@ public class EmpresaService implements IEmpresaService {
         if (!empresaRepository.existsById(id)) {
             throw new ResourceNotFoundException("Empresa", id);
         }
+        List<Long> proyectoIds = proyectoRepository.findIdsByEmpresaId(id);
+        for (Long proyectoId : proyectoIds) {
+            comentarioTareaRepository.deleteByProyectoId(proyectoId);
+            miembroProyectoRepository.deleteByProyectoId(proyectoId);
+            tareaRepository.softDeleteByProyectoId(proyectoId);
+        }
+        proyectoRepository.softDeleteByEmpresaId(id);
+        miembroEmpresaRepository.deleteByEmpresaId(id);
         empresaRepository.deleteById(id);
     }
 

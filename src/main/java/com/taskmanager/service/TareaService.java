@@ -29,6 +29,9 @@ public class TareaService implements ITareaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private ComentarioTareaRepository comentarioTareaRepository;
+
     public List<TareaDTO> findAll() {
         return tareaRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -129,6 +132,7 @@ public class TareaService implements ITareaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Solo se pueden eliminar tareas con estado 'Completado'");
         }
+        comentarioTareaRepository.deleteByTareaId(id);
         tareaRepository.deleteById(id);
     }
 
