@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +26,6 @@ public class TareaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private EtiquetaRepository etiquetaRepository;
 
     public List<TareaDTO> findAll() {
         return tareaRepository.findAll().stream()
@@ -88,11 +83,6 @@ public class TareaService {
             tarea.setAsignado(asignado);
         }
 
-        if (dto.getEtiquetaIds() != null && !dto.getEtiquetaIds().isEmpty()) {
-            Set<Etiqueta> etiquetas = new HashSet<>(etiquetaRepository.findAllById(dto.getEtiquetaIds()));
-            tarea.setEtiquetas(etiquetas);
-        }
-
         Tarea saved = tareaRepository.save(tarea);
         return convertToDTO(saved);
     }
@@ -118,11 +108,6 @@ public class TareaService {
             tarea.setAsignado(asignado);
         } else {
             tarea.setAsignado(null);
-        }
-
-        if (dto.getEtiquetaIds() != null) {
-            Set<Etiqueta> etiquetas = new HashSet<>(etiquetaRepository.findAllById(dto.getEtiquetaIds()));
-            tarea.setEtiquetas(etiquetas);
         }
 
         Tarea updated = tareaRepository.save(tarea);
@@ -162,11 +147,6 @@ public class TareaService {
         dto.setFechaCompletada(tarea.getFechaCompletada());
         dto.setOrden(tarea.getOrden());
         dto.setFechaCreacion(tarea.getFechaCreacion());
-        if (tarea.getEtiquetas() != null) {
-            dto.setEtiquetaIds(tarea.getEtiquetas().stream()
-                    .map(Etiqueta::getId)
-                    .collect(Collectors.toList()));
-        }
         return dto;
     }
 }

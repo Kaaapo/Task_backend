@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "tareas")
@@ -56,14 +54,6 @@ public class Tarea {
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tarea_etiquetas",
-            joinColumns = @JoinColumn(name = "tarea_id"),
-            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
-    )
-    private Set<Etiqueta> etiquetas = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
