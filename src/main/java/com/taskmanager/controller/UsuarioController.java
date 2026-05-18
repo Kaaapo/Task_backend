@@ -7,12 +7,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     @Autowired
     private IUsuarioService usuarioService;
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<UsuarioDTO>> buscar(
+            @RequestParam(value = "q", required = false, defaultValue = "") String q) {
+        String trimmed = q != null ? q.trim() : "";
+        if (trimmed.length() < 2) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(usuarioService.buscarParaSelector(trimmed));
+    }
 
     @GetMapping("/me")
     public ResponseEntity<UsuarioDTO> getMe(Authentication authentication) {

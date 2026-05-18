@@ -5,6 +5,8 @@ import com.taskmanager.model.Usuario;
 import java.util.List;
 
 public interface IUsuarioService {
+    List<UsuarioDTO> buscarParaSelector(String consulta);
+
     List<UsuarioDTO> findAll();
     UsuarioDTO findById(Long id);
     UsuarioDTO findByEmail(String email);

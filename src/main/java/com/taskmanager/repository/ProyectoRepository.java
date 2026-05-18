@@ -13,6 +13,10 @@ import java.util.List;
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     List<Proyecto> findByEmpresaId(Long empresaId);
 
+    @Query("SELECT DISTINCT p FROM Proyecto p WHERE p.creador.id = :usuarioId OR EXISTS (" +
+            "SELECT 1 FROM MiembroProyecto mp WHERE mp.proyecto = p AND mp.usuario.id = :usuarioId)")
+    List<Proyecto> findAccessibleByUsuarioId(@Param("usuarioId") Long usuarioId);
+
     @Modifying
     @Query(value = "UPDATE proyectos SET deleted_at = NOW() WHERE empresa_id = :empresaId AND deleted_at IS NULL", nativeQuery = true)
     void softDeleteByEmpresaId(@Param("empresaId") Long empresaId);

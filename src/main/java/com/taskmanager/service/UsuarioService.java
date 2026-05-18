@@ -5,6 +5,7 @@ import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Usuario;
 import com.taskmanager.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,12 @@ public class UsuarioService implements IUsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    public List<UsuarioDTO> buscarParaSelector(String consulta) {
+        return usuarioRepository.buscarActivosParaSelector(consulta, PageRequest.of(0, 25)).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public List<UsuarioDTO> findAll() {
         return usuarioRepository.findAll().stream()

@@ -4,6 +4,8 @@ import com.taskmanager.dto.TareaDTO;
 import java.util.List;
 
 public interface ITareaService {
+    List<TareaDTO> findAccessibleForUser(String emailUsuario);
+
     List<TareaDTO> findAll();
     TareaDTO findById(Long id);
     List<TareaDTO> findByProyectoId(Long proyectoId);

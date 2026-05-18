@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,29 @@ public class ProyectoService implements IProyectoService {
     @Autowired
     private MiembroProyectoRepository miembroProyectoRepository;
 
+    @Autowired
+    private MembershipPermissionService membershipPermissionService;
+
+    public List<ProyectoDTO> findAccessibleForUser(String emailUsuario) {
+        Usuario u = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario."));
+        return proyectoRepository.findAccessibleByUsuarioId(u.getId()).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProyectoDTO> findAccessibleByEmpresaForUser(String emailUsuario, Long empresaId) {
+        Usuario u = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario."));
+        Set<Long> accessibleIds = proyectoRepository.findAccessibleByUsuarioId(u.getId()).stream()
+                .map(Proyecto::getId)
+                .collect(Collectors.toSet());
+        return proyectoRepository.findByEmpresaId(empresaId).stream()
+                .filter(p -> accessibleIds.contains(p.getId()))
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<ProyectoDTO> findAll() {
         return proyectoRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -60,6 +84,8 @@ public class ProyectoService implements IProyectoService {
     }
 
     public ProyectoDTO create(ProyectoDTO dto, String emailCreador) {
+        membershipPermissionService.requireEmpresaManagement(emailCreador, dto.getEmpresaId());
+
         Empresa empresa = empresaRepository.findById(dto.getEmpresaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa", dto.getEmpresaId()));
 
@@ -86,6 +112,15 @@ public class ProyectoService implements IProyectoService {
         proyecto.setProgreso(dto.getProgreso());
 
         Proyecto saved = proyectoRepository.save(proyecto);
+
+        if (!miembroProyectoRepository.existsByUsuarioIdAndProyectoId(creador.getId(), saved.getId())) {
+            MiembroProyecto miembroProyecto = new MiembroProyecto();
+            miembroProyecto.setUsuario(creador);
+            miembroProyecto.setProyecto(saved);
+            miembroProyecto.setRol("LIDER");
+            miembroProyectoRepository.save(miembroProyecto);
+        }
+
         return convertToDTO(saved);
     }
 

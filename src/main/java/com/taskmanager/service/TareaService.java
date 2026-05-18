@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,20 @@ public class TareaService implements ITareaService {
 
     @Autowired
     private ComentarioTareaRepository comentarioTareaRepository;
+
+    public List<TareaDTO> findAccessibleForUser(String emailUsuario) {
+        Usuario u = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario."));
+        List<Long> proyectoIds = proyectoRepository.findAccessibleByUsuarioId(u.getId()).stream()
+                .map(Proyecto::getId)
+                .collect(Collectors.toList());
+        if (proyectoIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return tareaRepository.findByProyectoIdIn(proyectoIds).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public List<TareaDTO> findAll() {
         return tareaRepository.findAll().stream()

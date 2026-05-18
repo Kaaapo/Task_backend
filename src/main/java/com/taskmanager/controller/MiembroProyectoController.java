@@ -2,9 +2,11 @@ package com.taskmanager.controller;
 
 import com.taskmanager.dto.MiembroProyectoDTO;
 import com.taskmanager.service.IMiembroProyectoService;
+import com.taskmanager.service.MembershipPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,14 @@ public class MiembroProyectoController {
     @Autowired
     private IMiembroProyectoService miembroProyectoService;
 
+    @Autowired
+    private MembershipPermissionService membershipPermissionService;
+
     @GetMapping
-    public ResponseEntity<List<MiembroProyectoDTO>> getMiembros(@PathVariable Long proyectoId) {
+    public ResponseEntity<List<MiembroProyectoDTO>> getMiembros(
+            @PathVariable Long proyectoId,
+            Authentication authentication) {
+        membershipPermissionService.requireProyectoAccess(authentication.getName(), proyectoId);
         List<MiembroProyectoDTO> miembros = miembroProyectoService.findByProyectoId(proyectoId);
         return ResponseEntity.ok(miembros);
     }
@@ -26,7 +34,9 @@ public class MiembroProyectoController {
     @PostMapping
     public ResponseEntity<MiembroProyectoDTO> addMiembro(
             @PathVariable Long proyectoId,
-            @RequestBody Map<String, Object> body) {
+            @RequestBody Map<String, Object> body,
+            Authentication authentication) {
+        membershipPermissionService.requireProyectoManagement(authentication.getName(), proyectoId);
         Long usuarioId = Long.valueOf(body.get("usuarioId").toString());
         String rol = body.containsKey("rol") ? body.get("rol").toString() : "DESARROLLADOR";
         MiembroProyectoDTO created = miembroProyectoService.addMiembro(proyectoId, usuarioId, rol);
@@ -37,13 +47,19 @@ public class MiembroProyectoController {
     public ResponseEntity<MiembroProyectoDTO> updateRol(
             @PathVariable Long proyectoId,
             @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
+            @RequestBody Map<String, String> body,
+            Authentication authentication) {
+        membershipPermissionService.requireProyectoManagement(authentication.getName(), proyectoId);
         MiembroProyectoDTO updated = miembroProyectoService.updateRol(id, body.get("rol"));
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeMiembro(@PathVariable Long proyectoId, @PathVariable Long id) {
+    public ResponseEntity<Void> removeMiembro(
+            @PathVariable Long proyectoId,
+            @PathVariable Long id,
+            Authentication authentication) {
+        membershipPermissionService.requireProyectoManagement(authentication.getName(), proyectoId);
         miembroProyectoService.removeMiembro(id);
         return ResponseEntity.noContent().build();
     }

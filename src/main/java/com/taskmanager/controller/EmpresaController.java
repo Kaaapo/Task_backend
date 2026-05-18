@@ -2,6 +2,7 @@ package com.taskmanager.controller;
 
 import com.taskmanager.dto.EmpresaDTO;
 import com.taskmanager.service.IEmpresaService;
+import com.taskmanager.service.MembershipPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,18 @@ public class EmpresaController {
     @Autowired
     private IEmpresaService empresaService;
 
+    @Autowired
+    private MembershipPermissionService membershipPermissionService;
+
     @GetMapping
-    public ResponseEntity<List<EmpresaDTO>> getAll() {
-        List<EmpresaDTO> empresas = empresaService.findAll();
+    public ResponseEntity<List<EmpresaDTO>> getAll(Authentication authentication) {
+        List<EmpresaDTO> empresas = empresaService.findAccessibleForUser(authentication.getName());
         return ResponseEntity.ok(empresas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmpresaDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<EmpresaDTO> getById(@PathVariable Long id, Authentication authentication) {
+        membershipPermissionService.requireEmpresaAccess(authentication.getName(), id);
         EmpresaDTO empresa = empresaService.findById(id);
         return ResponseEntity.ok(empresa);
     }
@@ -36,13 +41,18 @@ public class EmpresaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmpresaDTO> update(@PathVariable Long id, @RequestBody EmpresaDTO dto) {
+    public ResponseEntity<EmpresaDTO> update(
+            @PathVariable Long id,
+            @RequestBody EmpresaDTO dto,
+            Authentication authentication) {
+        membershipPermissionService.requireEmpresaManagement(authentication.getName(), id);
         EmpresaDTO updated = empresaService.update(id, dto);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+        membershipPermissionService.requireEmpresaManagement(authentication.getName(), id);
         empresaService.delete(id);
         return ResponseEntity.noContent().build();
     }

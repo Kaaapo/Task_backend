@@ -3,6 +3,7 @@ package com.taskmanager.service;
 import com.taskmanager.dto.EmpresaDTO;
 import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Empresa;
+import com.taskmanager.model.MiembroEmpresa;
 import com.taskmanager.model.Usuario;
 import com.taskmanager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,14 @@ public class EmpresaService implements IEmpresaService {
 
     @Autowired
     private MiembroEmpresaRepository miembroEmpresaRepository;
+
+    public List<EmpresaDTO> findAccessibleForUser(String emailUsuario) {
+        Usuario u = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario."));
+        return empresaRepository.findAccessibleByUsuarioId(u.getId()).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public List<EmpresaDTO> findAll() {
         return empresaRepository.findAll().stream()
@@ -74,6 +83,16 @@ public class EmpresaService implements IEmpresaService {
         empresa.setCreador(creador);
 
         Empresa saved = empresaRepository.save(empresa);
+
+        if (!miembroEmpresaRepository.existsByUsuarioIdAndEmpresaId(creador.getId(), saved.getId())) {
+            MiembroEmpresa miembro = new MiembroEmpresa();
+            miembro.setUsuario(creador);
+            miembro.setEmpresa(saved);
+            miembro.setRol("ADMIN");
+            miembro.setActivo(true);
+            miembroEmpresaRepository.save(miembro);
+        }
+
         return convertToDTO(saved);
     }
 

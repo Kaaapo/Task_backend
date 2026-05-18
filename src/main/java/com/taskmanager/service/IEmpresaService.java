@@ -4,6 +4,8 @@ import com.taskmanager.dto.EmpresaDTO;
 import java.util.List;
 
 public interface IEmpresaService {
+    List<EmpresaDTO> findAccessibleForUser(String emailUsuario);
+
     List<EmpresaDTO> findAll();
     EmpresaDTO findById(Long id);
     List<EmpresaDTO> findByCreadorId(Long creadorId);
