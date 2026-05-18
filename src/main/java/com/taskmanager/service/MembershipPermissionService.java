@@ -2,11 +2,13 @@ package com.taskmanager.service;
 
 import com.taskmanager.exception.ResourceNotFoundException;
 import com.taskmanager.model.Empresa;
+import com.taskmanager.model.ComentarioTarea;
 import com.taskmanager.model.MiembroEmpresa;
 import com.taskmanager.model.MiembroProyecto;
 import com.taskmanager.model.Proyecto;
 import com.taskmanager.model.Tarea;
 import com.taskmanager.model.Usuario;
+import com.taskmanager.repository.ComentarioTareaRepository;
 import com.taskmanager.repository.EmpresaRepository;
 import com.taskmanager.repository.MiembroEmpresaRepository;
 import com.taskmanager.repository.MiembroProyectoRepository;
@@ -40,6 +42,9 @@ public class MembershipPermissionService {
 
     @Autowired
     private TareaRepository tareaRepository;
+
+    @Autowired
+    private ComentarioTareaRepository comentarioTareaRepository;
 
     public Long requireUserId(String email) {
         Optional<Usuario> u = usuarioRepository.findByEmail(email);
@@ -108,9 +113,42 @@ public class MembershipPermissionService {
         }
     }
 
+    public boolean canManageProyecto(Long uid, Long proyectoId) {
+        Proyecto p = proyectoRepository.findById(proyectoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proyecto", proyectoId));
+        if (p.getCreador() != null && p.getCreador().getId().equals(uid)) {
+            return true;
+        }
+        Optional<MiembroProyecto> mpOpt = miembroProyectoRepository.findByUsuarioIdAndProyectoId(uid, proyectoId);
+        if (mpOpt.isPresent() && "LIDER".equalsIgnoreCase(mpOpt.get().getRol())) {
+            return true;
+        }
+        Empresa e = p.getEmpresa();
+        if (e != null) {
+            if (e.getCreador() != null && e.getCreador().getId().equals(uid)) {
+                return true;
+            }
+            Optional<MiembroEmpresa> meOpt = miembroEmpresaRepository.findByUsuarioIdAndEmpresaId(uid, e.getId());
+            if (meOpt.isPresent()) {
+                MiembroEmpresa me = meOpt.get();
+                return Boolean.TRUE.equals(me.getActivo()) && "ADMIN".equalsIgnoreCase(me.getRol());
+            }
+        }
+        return false;
+    }
+
     public void requireTareaAccess(String email, Long tareaId) {
         Tarea t = tareaRepository.findById(tareaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarea", tareaId));
         requireProyectoAccess(email, t.getProyecto().getId());
+    }
+
+    public void requireComentarioOwner(String email, Long comentarioId) {
+        Long uid = requireUserId(email);
+        ComentarioTarea c = comentarioTareaRepository.findById(comentarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("ComentarioTarea", comentarioId));
+        if (c.getAutor() == null || !c.getAutor().getId().equals(uid)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo puedes eliminar tus comentarios");
+        }
     }
 }

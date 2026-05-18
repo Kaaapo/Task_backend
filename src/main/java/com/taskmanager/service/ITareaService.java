@@ -13,5 +13,6 @@ public interface ITareaService {
     List<TareaDTO> findByProyectoIdAndEstadoId(Long proyectoId, Long estadoId);
     TareaDTO create(TareaDTO dto, String emailCreador);
     TareaDTO update(Long id, TareaDTO dto);
+    TareaDTO updateWithPermissions(Long id, TareaDTO dto, String emailUsuario);
     void delete(Long id);
 }

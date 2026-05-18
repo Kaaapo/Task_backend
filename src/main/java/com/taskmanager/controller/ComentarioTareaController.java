@@ -57,6 +57,7 @@ public class ComentarioTareaController {
             @PathVariable Long id,
             Authentication authentication) {
         membershipPermissionService.requireTareaAccess(authentication.getName(), tareaId);
+        membershipPermissionService.requireComentarioOwner(authentication.getName(), id);
         comentarioTareaService.delete(id);
         return ResponseEntity.noContent().build();
     }

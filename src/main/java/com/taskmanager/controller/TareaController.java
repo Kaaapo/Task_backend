@@ -80,7 +80,7 @@ public class TareaController {
             @RequestBody TareaDTO dto,
             Authentication authentication) {
         membershipPermissionService.requireTareaAccess(authentication.getName(), id);
-        TareaDTO updated = tareaService.update(id, dto);
+        TareaDTO updated = tareaService.updateWithPermissions(id, dto, authentication.getName());
         return ResponseEntity.ok(updated);
     }
 

@@ -33,6 +33,9 @@ public class TareaService implements ITareaService {
     @Autowired
     private ComentarioTareaRepository comentarioTareaRepository;
 
+        @Autowired
+        private MembershipPermissionService membershipPermissionService;
+
     public List<TareaDTO> findAccessibleForUser(String emailUsuario) {
         Usuario u = usuarioRepository.findByEmail(emailUsuario)
                 .orElseThrow(() -> new RuntimeException("No se pudo identificar tu cuenta de usuario."));
@@ -139,6 +142,36 @@ public class TareaService implements ITareaService {
         Tarea updated = tareaRepository.save(tarea);
         return convertToDTO(updated);
     }
+
+        public TareaDTO updateWithPermissions(Long id, TareaDTO dto, String emailUsuario) {
+                Tarea tarea = tareaRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Tarea", id));
+
+                Long uid = membershipPermissionService.requireUserId(emailUsuario);
+                boolean canManage = membershipPermissionService.canManageProyecto(uid, tarea.getProyecto().getId());
+                boolean isCreator = tarea.getCreador() != null && tarea.getCreador().getId().equals(uid);
+                boolean isAssigned = tarea.getAsignado() != null && tarea.getAsignado().getId().equals(uid);
+
+                if (canManage || isCreator) {
+                        return update(id, dto);
+                }
+
+                if (!isAssigned) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes editar esta tarea");
+                }
+
+                if (dto.getEstadoId() == null) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estado es obligatorio");
+                }
+
+                Estado estado = estadoRepository.findById(dto.getEstadoId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Estado", dto.getEstadoId()));
+
+                tarea.setEstado(estado);
+
+                Tarea updated = tareaRepository.save(tarea);
+                return convertToDTO(updated);
+        }
 
     public void delete(Long id) {
         Tarea tarea = tareaRepository.findById(id)
